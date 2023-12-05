@@ -81,7 +81,7 @@ if __name__ == '__main__':
         description='Benchmark the latency of processing a single batch of '
         'requests till completion.')
     parser.add_argument('--model', type=str, default='facebook/opt-125m')
-    parser.add_argument('--tokenizer', type=str, default=None)
+    parser.add_argument('--tokenizer', type=str, default='facebook/opt-125m')
     parser.add_argument('--quantization',
                         '-q',
                         choices=['awq', 'squeezellm', None],

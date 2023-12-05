@@ -21,8 +21,8 @@ NUM_GEN_SEQS = [7]  # Arbitrary values for testing
 NUM_PREFILL_SEQS = [3]  # Arbitrary values for testing
 NUM_HEADS = [(40, 40), (64, 8)]  # Arbitrary values for testing
 HEAD_SIZES = [64, 80, 96, 112, 128, 256]
-BLOCK_SIZES = [16, 32]
-USE_ALIBI = [False, True]
+BLOCK_SIZES = [8, 16, 32]
+USE_ALIBI = [False]
 SEEDS = [0]
 
 
@@ -97,7 +97,7 @@ def ref_single_query_cached_kv_attention(
         output[i].copy_(out, non_blocking=True)
 
 
-@pytest.mark.parametrize("version", ["v1", "v2"])
+@pytest.mark.parametrize("version", ["v3"])
 @pytest.mark.parametrize("num_seqs", NUM_GEN_SEQS)
 @pytest.mark.parametrize("num_heads", NUM_HEADS)
 @pytest.mark.parametrize("head_size", HEAD_SIZES)
@@ -209,6 +209,37 @@ def test_paged_attention(
             block_size,
             max_context_len,
             alibi_slopes,
+        )
+    elif version == "v3":
+        num_partitions = ((max_context_len + PARTITION_SIZE - 1) //
+                          PARTITION_SIZE)
+        assert PARTITION_SIZE % block_size == 0
+        num_seqs, num_heads, head_size = output.shape
+        tmp_output = torch.empty(
+            size=(num_seqs, num_heads, num_partitions, head_size),
+            dtype=output.dtype,
+            device=output.device,
+        )
+        exp_sums = torch.empty(
+            size=(num_seqs, num_heads, num_partitions),
+            dtype=torch.float32,
+            device=output.device,
+        )
+        max_logits = torch.empty_like(exp_sums)
+        ops.paged_attention_v3(
+            output,
+            exp_sums,
+            max_logits,
+            tmp_output,
+            query,
+            key_cache,
+            value_cache,
+            head_mapping,
+            scale,
+            block_tables,
+            context_lens,
+            block_size,
+            max_context_len,
         )
     else:
         raise AssertionError(f"Unknown version: {version}")

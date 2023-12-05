@@ -16,31 +16,47 @@ from vllm.logger import init_logger
 logger = init_logger(__name__)
 
 # TODO(woosuk): Lazy-load the model classes.
+def _lazy_load_model_class(class_name: str) -> Type[nn.Module]:
+    module = __import__("vllm.model_executor.models", fromlist=[class_name])
+    return getattr(module, class_name)
+
 _MODEL_REGISTRY = {
-    "AquilaModel": AquilaForCausalLM,
-    "AquilaForCausalLM": AquilaForCausalLM,  # AquilaChat2
-    "BaiChuanForCausalLM": BaiChuanForCausalLM,  # baichuan-7b
-    "BaichuanForCausalLM": BaichuanForCausalLM,  # baichuan-13b
-    "BloomForCausalLM": BloomForCausalLM,
-    "ChatGLMModel": ChatGLMForCausalLM,
-    "ChatGLMForConditionalGeneration": ChatGLMForCausalLM,
-    "FalconForCausalLM": FalconForCausalLM,
-    "GPT2LMHeadModel": GPT2LMHeadModel,
-    "GPTBigCodeForCausalLM": GPTBigCodeForCausalLM,
-    "GPTJForCausalLM": GPTJForCausalLM,
-    "GPTNeoXForCausalLM": GPTNeoXForCausalLM,
-    "InternLMForCausalLM": InternLMForCausalLM,
-    "LlamaForCausalLM": LlamaForCausalLM,
-    "LLaMAForCausalLM": LlamaForCausalLM,  # For decapoda-research/llama-*
-    "MistralForCausalLM": MistralForCausalLM,
+    "AquilaModel": lambda: _lazy_load_model_class("AquilaForCausalLM"),
+    "AquilaForCausalLM": lambda: _lazy_load_model_class("AquilaForCausalLM"),  # AquilaChat2
+    "BaiChuanForCausalLM": lambda: _lazy_load_model_class("BaiChuanForCausalLM"),  # baichuan-7b
+    "BaichuanForCausalLM": lambda: _lazy_load_model_class("BaichuanForCausalLM"),  # baichuan-13b
+    "BloomForCausalLM": lambda: _lazy_load_model_class("BloomForCausalLM"),
+    "ChatGLMModel": lambda: _lazy_load_model_class("ChatGLMForCausalLM"),
+    "ChatGLMForConditionalGeneration": lambda: _lazy_load_model_class("ChatGLMForCausalLM"),
+    "FalconForCausalLM": lambda: _lazy_load_model_class("FalconForCausalLM"),
+    "GPT2LMHeadModel": lambda: _lazy_load_model_class("GPT2LMHeadModel"),
+    "GPTBigCodeForCausalLM": lambda: _lazy_load_model_class("GPTBigCodeForCausalLM"),
+    "GPTJForCausalLM": lambda: _lazy_load_model_class("GPTJForCausalLM"),
+    "GPTNeoXForCausalLM": lambda: _lazy_load_model_class("GPTNeoXForCausalLM"),
+    "InternLMForCausalLM": lambda: _lazy_load_model_class("InternLMForCausalLM"),
+    "LlamaForCausalLM": lambda: _lazy_load_model_class("LlamaForCausalLM"),
+    "LLaMAForCausalLM": lambda: _lazy_load_model_class("LlamaForCausalLM"),  # For decapoda-research/llama-*
+    "MistralForCausalLM": lambda: _lazy_load_model_class("MistralForCausalLM"),
     # transformers's mpt class has lower case
-    "MptForCausalLM": MPTForCausalLM,
-    "MPTForCausalLM": MPTForCausalLM,
-    "OPTForCausalLM": OPTForCausalLM,
-    "PhiForCausalLM": PhiForCausalLM,
-    "QWenLMHeadModel": QWenLMHeadModel,
-    "RWForCausalLM": FalconForCausalLM,
-    "YiForCausalLM": YiForCausalLM,
+    "MptForCausalLM": lambda: _lazy_load_model_class("MPTForCausalLM"),
+    "MPTForCausalLM": lambda: _lazy_load_model_class("MPTForCausalLM"),
+    "OPTForCausalLM": lambda: _lazy_load_model_class("OPTForCausalLM"),
+    "PhiForCausalLM": lambda: _lazy_load_model_class("PhiForCausalLM"),
+    "QWenLMHeadModel": lambda: _lazy_load_model_class("QWenLMHeadModel"),
+    "RWForCausalLM": lambda: _lazy_load_model_class("FalconForCausalLM"),
+    "YiForCausalLM": lambda: _lazy_load_model_class("YiForCausalLM"),
+}
+
+# Models to be disabled in ROCm
+_ROCM_UNSUPPORTED_MODELS = []
+if is_hip():
+    for rocm_model in _ROCM_UNSUPPORTED_MODELS:
+        del _MODEL_REGISTRY[rocm_model]
+
+# Models partially supported in ROCm
+_ROCM_PARTIALLY_SUPPORTED_MODELS = {
+    "MistralForCausalLM":
+    "Sliding window attention is not supported in ROCm's flash attention",
 }
 
 # Models to be disabled in ROCm
@@ -73,7 +89,7 @@ def _get_model_architecture(config: PretrainedConfig) -> Type[nn.Module]:
                 logger.warning(
                     f"{arch} is not fully supported in ROCm. Reason: "
                     f"{_ROCM_PARTIALLY_SUPPORTED_MODELS[arch]}")
-            return _MODEL_REGISTRY[arch]
+            return _MODEL_REGISTRY[arch]()
         elif arch in _ROCM_UNSUPPORTED_MODELS:
             raise ValueError(
                 f"Model architecture {arch} is not supported by ROCm for now. \n"

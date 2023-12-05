@@ -84,25 +84,18 @@ def run_vllm(
     )
 
     # Add the requests to the engine.
-    for prompt, _, output_len in requests:
-        sampling_params = SamplingParams(
-            n=n,
-            temperature=0.0 if use_beam_search else 1.0,
-            top_p=1.0,
-            use_beam_search=use_beam_search,
-            ignore_eos=True,
-            max_tokens=output_len,
-        )
-        # FIXME(woosuk): Do not use internal method.
-        llm._add_request(
-            prompt=prompt,
-            prompt_token_ids=None,
-            sampling_params=sampling_params,
-        )
+    prompts = [prompt for prompt, _, _ in requests]
+    sampling_params = SamplingParams(
+        n=n,
+        temperature=0.0 if use_beam_search else 1.0,
+        top_p=1.0,
+        use_beam_search=use_beam_search,
+        ignore_eos=True,
+        max_tokens=requests[0][2],
+    )
 
     start = time.perf_counter()
-    # FIXME(woosuk): Do not use internal method.
-    llm._run_engine(use_tqdm=True)
+    llm.generate(prompts, sampling_params, use_tqdm=True)
     end = time.perf_counter()
     return end - start
 
@@ -237,7 +230,7 @@ if __name__ == "__main__":
                         help="Input prompt length for each request")
     parser.add_argument("--output-len",
                         type=int,
-                        default=None,
+                        default=128,
                         help="Output length for each request. Overrides the "
                         "output length from the dataset.")
     parser.add_argument("--model", type=str, default="facebook/opt-125m")
@@ -254,7 +247,7 @@ if __name__ == "__main__":
     parser.add_argument("--use-beam-search", action="store_true")
     parser.add_argument("--num-prompts",
                         type=int,
-                        default=1000,
+                        default=1024,
                         help="Number of prompts to process.")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--hf-max-batch-size",

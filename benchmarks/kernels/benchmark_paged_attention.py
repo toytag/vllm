@@ -75,7 +75,7 @@ def main(
 
     # Prepare for the paged attention kernel.
     output = torch.empty_like(query)
-    if version == "v2":
+    if version == "v2" or version == "v3":
         num_partitions = ((max_context_len + PARTITION_SIZE - 1) //
                           PARTITION_SIZE)
         tmp_output = torch.empty(
@@ -128,13 +128,29 @@ def main(
                     max_context_len,
                     alibi_slopes,
                 )
+            elif version == "v3":
+                ops.paged_attention_v3(
+                    output,
+                    exp_sums,
+                    max_logits,
+                    tmp_output,
+                    query,
+                    key_cache,
+                    value_cache,
+                    head_mapping,
+                    scale,
+                    block_tables,
+                    context_lens,
+                    block_size,
+                    max_context_len,
+                )
             else:
                 raise ValueError(f"Invalid version: {version}")
         torch.cuda.synchronize()
 
         end_time = time.perf_counter()
         if profile:
-            torch.cuda.cudart().cudaProfilerStart()
+            torch.cuda.cudart().cudaProfilerStop()
         return (end_time - start_time) / num_iters
 
     # Warmup.
@@ -145,7 +161,7 @@ def main(
     if do_profile:
         latency = run_benchmark(num_iters=1, profile=True)
     else:
-        latency = run_benchmark(num_iters=100, profile=False)
+        latency = run_benchmark(num_iters=1, profile=False)
     print(f"Kernel running time: {latency * 1000000:.3f} us")
 
 
@@ -154,7 +170,7 @@ if __name__ == '__main__':
         description="Benchmark the paged attention kernel.")
     parser.add_argument("--version",
                         type=str,
-                        choices=["v1", "v2"],
+                        choices=["v1", "v2", "v3"],
                         default="v2")
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--context-len", type=int, default=4096)
@@ -164,7 +180,7 @@ if __name__ == '__main__':
                         type=int,
                         choices=[64, 80, 96, 112, 128, 256],
                         default=128)
-    parser.add_argument("--block-size", type=int, choices=[16, 32], default=16)
+    parser.add_argument("--block-size", type=int, choices=[8, 16, 32], default=16)
     parser.add_argument("--use-alibi", action="store_true")
     parser.add_argument("--dtype",
                         type=str,
