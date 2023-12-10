@@ -15,36 +15,38 @@ from vllm.logger import init_logger
 
 logger = init_logger(__name__)
 
-# TODO(woosuk): Lazy-load the model classes.
-def _lazy_load_model_class(class_name: str) -> Type[nn.Module]:
+
+# Lazy-load the model classes.
+def _load(class_name: str) -> Type[nn.Module]:
     module = __import__("vllm.model_executor.models", fromlist=[class_name])
     return getattr(module, class_name)
 
+
 _MODEL_REGISTRY = {
-    "AquilaModel": lambda: _lazy_load_model_class("AquilaForCausalLM"),
-    "AquilaForCausalLM": lambda: _lazy_load_model_class("AquilaForCausalLM"),  # AquilaChat2
-    "BaiChuanForCausalLM": lambda: _lazy_load_model_class("BaiChuanForCausalLM"),  # baichuan-7b
-    "BaichuanForCausalLM": lambda: _lazy_load_model_class("BaichuanForCausalLM"),  # baichuan-13b
-    "BloomForCausalLM": lambda: _lazy_load_model_class("BloomForCausalLM"),
-    "ChatGLMModel": lambda: _lazy_load_model_class("ChatGLMForCausalLM"),
-    "ChatGLMForConditionalGeneration": lambda: _lazy_load_model_class("ChatGLMForCausalLM"),
-    "FalconForCausalLM": lambda: _lazy_load_model_class("FalconForCausalLM"),
-    "GPT2LMHeadModel": lambda: _lazy_load_model_class("GPT2LMHeadModel"),
-    "GPTBigCodeForCausalLM": lambda: _lazy_load_model_class("GPTBigCodeForCausalLM"),
-    "GPTJForCausalLM": lambda: _lazy_load_model_class("GPTJForCausalLM"),
-    "GPTNeoXForCausalLM": lambda: _lazy_load_model_class("GPTNeoXForCausalLM"),
-    "InternLMForCausalLM": lambda: _lazy_load_model_class("InternLMForCausalLM"),
-    "LlamaForCausalLM": lambda: _lazy_load_model_class("LlamaForCausalLM"),
-    "LLaMAForCausalLM": lambda: _lazy_load_model_class("LlamaForCausalLM"),  # For decapoda-research/llama-*
-    "MistralForCausalLM": lambda: _lazy_load_model_class("MistralForCausalLM"),
+    "AquilaModel": lambda: _load("AquilaForCausalLM"),
+    "AquilaForCausalLM": lambda: _load("AquilaForCausalLM"),  # AquilaChat2
+    "BaiChuanForCausalLM": lambda: _load("BaiChuanForCausalLM"),  # baichuan-7b
+    "BaichuanForCausalLM": lambda: _load("BaichuanForCausalLM"),  # baichuan-13b
+    "BloomForCausalLM": lambda: _load("BloomForCausalLM"),
+    "ChatGLMModel": lambda: _load("ChatGLMForCausalLM"),
+    "ChatGLMForConditionalGeneration": lambda: _load("ChatGLMForCausalLM"),
+    "FalconForCausalLM": lambda: _load("FalconForCausalLM"),
+    "GPT2LMHeadModel": lambda: _load("GPT2LMHeadModel"),
+    "GPTBigCodeForCausalLM": lambda: _load("GPTBigCodeForCausalLM"),
+    "GPTJForCausalLM": lambda: _load("GPTJForCausalLM"),
+    "GPTNeoXForCausalLM": lambda: _load("GPTNeoXForCausalLM"),
+    "InternLMForCausalLM": lambda: _load("InternLMForCausalLM"),
+    "LlamaForCausalLM": lambda: _load("LlamaForCausalLM"),
+    "LLaMAForCausalLM": lambda: _load("LlamaForCausalLM"),  # For decapoda-research/llama-*
+    "MistralForCausalLM": lambda: _load("MistralForCausalLM"),
     # transformers's mpt class has lower case
-    "MptForCausalLM": lambda: _lazy_load_model_class("MPTForCausalLM"),
-    "MPTForCausalLM": lambda: _lazy_load_model_class("MPTForCausalLM"),
-    "OPTForCausalLM": lambda: _lazy_load_model_class("OPTForCausalLM"),
-    "PhiForCausalLM": lambda: _lazy_load_model_class("PhiForCausalLM"),
-    "QWenLMHeadModel": lambda: _lazy_load_model_class("QWenLMHeadModel"),
-    "RWForCausalLM": lambda: _lazy_load_model_class("FalconForCausalLM"),
-    "YiForCausalLM": lambda: _lazy_load_model_class("YiForCausalLM"),
+    "MptForCausalLM": lambda: _load("MPTForCausalLM"),
+    "MPTForCausalLM": lambda: _load("MPTForCausalLM"),
+    "OPTForCausalLM": lambda: _load("OPTForCausalLM"),
+    "PhiForCausalLM": lambda: _load("PhiForCausalLM"),
+    "QWenLMHeadModel": lambda: _load("QWenLMHeadModel"),
+    "RWForCausalLM": lambda: _load("FalconForCausalLM"),
+    "YiForCausalLM": lambda: _load("YiForCausalLM"),
 }
 
 # Models to be disabled in ROCm

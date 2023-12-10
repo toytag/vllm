@@ -1244,7 +1244,7 @@ template<
   int BLOCK_SIZE,
   int NUM_THREADS = 128,
   int PARTITION_SIZE = 512>
-inline void paged_attention_v3_launcher(
+void paged_attention_v3_launcher(
   torch::Tensor& out,
   torch::Tensor& exp_sums,
   torch::Tensor& max_logits,

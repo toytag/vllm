@@ -9,13 +9,13 @@ client = openai.OpenAI(
 def predict(message, history):
     history_openai_format = []
     for human, assistant in history:
-        history_openai_format.append({"role": "user", "content": human })
+        history_openai_format.append({"role": "user", "content": human})
         history_openai_format.append({"role": "assistant", "content": assistant})
     history_openai_format.append({"role": "user", "content": message})
 
     default_model = client.with_options(max_retries=3, timeout=10).models.list().data[0].id
     stream = client.with_options(max_retries=3).chat.completions.create(
-        messages= history_openai_format,
+        messages=history_openai_format,
         model=default_model,
         stream=True,
     )
@@ -28,8 +28,6 @@ def predict(message, history):
 
 gr.ChatInterface(
     predict,
-    # chatbot=gr.Chatbot(height=300),
-    # textbox=gr.Textbox(placeholder="Ask me a yes or no question", container=False, scale=7),
     title="LLM Inference Engine",
     description="Efficient LLM Inferencing on a NVIDIA L4 Core GPU with 24 GiB of VRAM.",
     examples=[
