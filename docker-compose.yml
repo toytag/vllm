@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  vllm:
+    container_name: vllm
+    build: .
+    ports: # for dev
+      - 8080:8080
+    restart: unless-stopped
+
+  client:
+    container_name: client
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM python:3.10
+        RUN pip install --no-cache-dir openai gradio
+        COPY client.py /client.py
+        EXPOSE 7860
+        CMD ["python", "client.py"]
+    network_mode: service:vllm
+    ports: # for dev
+      - 7860:7860
+    restart: unless-stopped
