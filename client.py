@@ -8,7 +8,7 @@ client = openai.OpenAI(
 )
 
 def predict(message, history):
-    history_openai_format = []
+    history_openai_format = [{"role": "system", "content": "You are a helpful assistent."}]
     for human, assistant in history:
         history_openai_format.append({"role": "user", "content": human})
         history_openai_format.append({"role": "assistant", "content": assistant})

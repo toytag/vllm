@@ -6,12 +6,25 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - torch_cuda_arch_list=8.9+PTX # NVIDIA L4
+        - max_jobs=2 # Tune down if out of memory
+        - nvcc_threads=8
       target: vllm-openai
-    command: --model lmsys/vicuna-7b-v1.5
-    ports: # for dev
-      - 8000:8000
+    command: >
+      --model Intel/neural-chat-7b-v3-3-Slerp
+      --chat-template /examples/template_neuralchat.jinja
     volumes:
-      - ~/.cache/huggingface:/root/.cache/huggingface
+      - ~/.cache/huggingface:/root/.cache/huggingface # model cache
+      - ./examples:/examples # chat template
+    ports:
+      - 8000:8000
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import http.client; conn = http.client.HTTPConnection('localhost', 8000); conn.request('GET', '/health'); response = conn.getresponse(); exit(0) if response.status == 200 else exit(1)"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     restart: unless-stopped
     deploy:
       resources:
@@ -29,9 +42,12 @@ services:
         FROM python:3.10
         RUN pip install --no-cache-dir openai gradio
         COPY client.py /client.py
-        ENV VLLM_ENDPOINT http://vllm:8000/v1
+        ENV VLLM_ENDPOINT=http://vllm:8000/v1
         EXPOSE 7860
         CMD ["python", "client.py"]
-    ports: # for dev
+    ports:
       - 7860:7860
     restart: unless-stopped
+    depends_on:
+      vllm:
+        condition: service_healthy
