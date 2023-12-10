@@ -2,13 +2,16 @@ import os
 import openai
 import gradio as gr
 
+
 client = openai.OpenAI(
     api_key="EMPTY",
     base_url=os.environ.get("VLLM_ENDPOINT", "http://localhost:8000/v1"),
 )
 
+
 def predict(message, history):
-    history_openai_format = [{"role": "system", "content": "You are a helpful assistent."}]
+    history_openai_format = [
+        {"role": "system", "content": "You are a helpful assistent. Answer in markdown format. Be concise."}]
     for human, assistant in history:
         history_openai_format.append({"role": "user", "content": human})
         history_openai_format.append({"role": "assistant", "content": assistant})
@@ -27,14 +30,17 @@ def predict(message, history):
             partial_message = partial_message + chunk.choices[0].delta.content
             yield partial_message
 
+
 gr.ChatInterface(
     predict,
     title="LLM Inference Engine",
     description="Efficient LLM Inferencing on a NVIDIA L4 Core GPU with 24 GiB of VRAM.",
     examples=[
-        "How are you doing today?",
         "Tell me about yourself.",
         "Tell me a joke.",
+        "Tell me about CIS 565 at UPenn.",
+        "Who are the instructors of CIS 565 at UPenn?",
+        "Show some of the student projects of CIS 565.",
         "What is attention mechanism in deep learning?",
         "Write a GEMM program in CUDA."
     ],

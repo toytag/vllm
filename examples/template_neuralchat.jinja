@@ -1,6 +1,70 @@
 {% for message in messages %}
 {% if message['role'] == 'system' %}
 ### System:
+If asked about CIS 565, reference this:
+CIS 5650 GPU Programming and Architecture - Fall 2023
+University of Pennsylvania
+Course Description
+Topics Covered:
+GPU Computing: GPU architecture, massively parallel programming, parallel algorithms, performance.
+Rendering: Graphics pipeline (rasterization), path tracing, deferred shading, forward+ rendering, VR.
+APIs: CUDA, WebGL, RTX, Vulkan.
+Nature: Project-intensive, involving significant coding, writing, and presenting.
+Recommended Pre-Course: Joe Devietti's CIS 601 (no longer offered at Penn).
+Prerequisites
+Passion for computer graphics.
+One of the following:
+CIS 4600/5600: Introduction to Computer Graphics.
+CIS 4610/5610: Advanced Rendering (preferably with an A grade).
+Strong C or C++ skills.
+Useful Additional Courses: CIS 3800 (Operating Systems), CIS 5010 (Computer Architecture).
+Course Components
+Projects: 50%
+Final Project: 45%
+Participation: 5%
+Academic Integrity
+Strict policy against plagiarism. Code submissions will be cross-checked.
+COVID-19 Protocols for Fall 2023
+In-person classes with normal capacity.
+Mask policy following University guidelines.
+Possible online-only classes in case of COVID-19 spread.
+Lecturers
+Wayne Wu
+Office Hours: In-Person after class, Online (Tue & Thu, 10-11AM), By appointment.
+Shehzan Mohammed
+Office Hours: By appointment.
+Teaching Assistants
+Chang Liu: In-Person (Sat, 2-5PM).
+Shutong Wu: In-Person (Mon & Wed, 1-3PM).
+Shixuan Fang: In-Person (Tue & Thu, 1-3PM).
+Course Advisor
+Patrick Cozzi
+Recommended Reading
+Books like "Programming Massively Parallel Processors", "Real-Time Rendering", "Ray Tracing Gems".
+Online resources like NVIDIA GTC, Coursera courses.
+Online Resources
+Github: CIS565-Fall-2023
+Class Forum: Ed Discussions
+LinkedIn Group: Networking with current and previous students.
+Acknowledgments
+Contributions from previous instructors, TAs, students, and industry professionals.
+Registration and Surveys
+Issues with registration can be addressed in the first class.
+A mandatory student survey must be completed before the first class.
+Student projects:
+1. [Real-time Texture Editing in Third-Party Games](https://voluble-sopapillas-1f9751.netlify.app/) -- [Lennart Meincke](https://github.com/LMSDev)
+2. [Vulcanite: A Vulkan-based Dynamic LOD rendering pipeline](https://github.com/bdwhst/Vulcanite) -- [Andrew (Han) Yang](https://github.com/bdwhst), [Yian Chen](https://github.com/SydianAndrewChen)
+3. [Interactive Erosion Simulation in WebGPU](https://github.com/GPU-Gang/WebGPU-Erosion-Simulation) -- [Linda Zhu](https://github.com/LinDadaism), [Saksham Nagpal](https://github.com/Saksham03), [Utkarsh Dwivedi](https://github.com/utkarshdwivedi3997)
+4. [Real-time Volumetric Cloud Rendering in Vulkan](https://github.com/YueZhang1027/CIS5650-Final-Project-Frostnova) -- [Janet Wang](https://github.com/xchennnw), [Xinyu Niu](https://github.com/xinyuniu123), [Yue Zhang](https://github.com/YueZhang1027)
+5. [Anime4K - Video Upscaling & Denoising for WebGPU](https://github.com/Anime4KWebBoost/Anime4K-WebGPU) -- [Ruijun (Daniel) Zhong](https://github.com/DanielZhong), [Yuanqi Wang](https://github.com/plasmas), [Tong Hu](https://github.com/TongHuoAo)
+6. [GPU-Accelerated Soft Body Simulation in CUDA](https://github.com/GrahamZen/Soft-Body-Simulation-CUDA) -- [Gehan Zheng](https://github.com/GrahamZen), [Hanting Xu](https://github.com/HantingXu)
+7. [Mega Minecraft](https://github.com/AdityaGupta1/mega-minecraft) -- [Aditya Gupta](https://github.com/AdityaGupta1), [Helena Zhang](https://github.com/helenazzzzz), [Alan Qiao](https://github.com/Alan-Qiao)
+8. [Real-time Snow Accumulation Simulation on Terrain in WebGPU](https://github.com/Cryszzz/CIS-5650-Final-Project) -- [Jason Li](https://github.com/jailea), [Keyu Lu](https://github.com/uluyek), [Xiaoxiao Zou](https://github.com/Cryszzz)
+9. [control.net](https://github.com/JChunX/tinygrad/tree/web-control-net/examples/webgpu/controlnet) -- [Jason Xie](https://github.com/JChunX), [Gene Liu](https://github.com/eggggo), [Zhiyu (Oliver) Lei](https://github.com/Zhiyu-Lei)
+10. [Efficient Large Language Model Inferencing on GPUs](https://github.com/yinuotxie/Project-CUDA-FlashAttention) -- [Xitong Zheng](https://github.com/Zenfendson), [Zhenzhong Tang](https://github.com/toytag), [Yinuo (Travis) Xie](https://github.com/yinuotxie)
+11. [GPU-based Motion Matching for Vivid Game NPCs](https://github.com/CaballoMa/GPUBased_Emotional_MotionMatching) -- [Xiaoyue Ma](https://github.com/CaballoMa), [Han Wang](https://github.com/Ibm510000)
+12. [Vulkan Mesh Shader with Free-Form Planar Area Lights](https://github.com/CIS565-Final-Project/Vulkan-Free-Form-Area-Light) -- [Mengxuan Huang](https://github.com/MengxuanHUANG), [Licheng Cao](https://github.com/LichengCAO), [Tianyi Xiao](https://github.com/JackXTY)
+
 {{ message['content']|trim -}}
 {% elif message['role'] == 'user' %}
 ### User:
