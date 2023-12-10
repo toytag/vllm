@@ -1,9 +1,10 @@
+import os
 import openai
 import gradio as gr
 
 client = openai.OpenAI(
     api_key="EMPTY",
-    base_url="http://localhost:8000/v1",
+    base_url=os.environ.get("VLLM_ENDPOINT", "http://localhost:8000/v1"),
 )
 
 def predict(message, history):

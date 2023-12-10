@@ -3,22 +3,35 @@ version: '3'
 services:
   vllm:
     container_name: vllm
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: vllm-openai
+    command: --model lmsys/vicuna-7b-v1.5
     ports: # for dev
-      - 8080:8080
+      - 8000:8000
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface
     restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
-  client:
-    container_name: client
+  webui:
+    container_name: webui
     build:
       context: .
       dockerfile_inline: |
         FROM python:3.10
         RUN pip install --no-cache-dir openai gradio
         COPY client.py /client.py
+        ENV VLLM_ENDPOINT http://vllm:8000/v1
         EXPOSE 7860
         CMD ["python", "client.py"]
-    network_mode: service:vllm
     ports: # for dev
       - 7860:7860
     restart: unless-stopped
