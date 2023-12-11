@@ -12,7 +12,7 @@ services:
         - nvcc_threads=8
       target: vllm-openai
     command: >
-      --model Intel/neural-chat-7b-v3-3-Slerp
+      --model Intel/neural-chat-7b-v3-1
       --chat-template /examples/template_neuralchat.jinja
     volumes:
       - ~/.cache/huggingface:/root/.cache/huggingface # model cache

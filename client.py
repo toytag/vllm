@@ -31,8 +31,8 @@ def predict(message, history):
 
 gr.ChatInterface(
     predict,
-    title="LLM Inference Engine",
-    description="Efficient LLM Inferencing on a NVIDIA L4 Core GPU with 24 GiB of VRAM.",
+    title="🤖 LLM Inference Engine",
+    description="Efficient LLM Inferencing on a NVIDIA L4 Tensor Core GPU with 24 GiB of VRAM.",
     examples=[
         "Tell me about yourself.",
         "Tell me a joke.",
