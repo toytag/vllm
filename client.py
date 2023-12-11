@@ -3,19 +3,17 @@ import openai
 import gradio as gr
 
 
-client = openai.OpenAI(
-    api_key="EMPTY",
-    base_url=os.environ.get("VLLM_ENDPOINT", "http://localhost:8000/v1"),
-)
-
-
 def predict(message, history):
-    history_openai_format = [
-        {"role": "system", "content": "You are a helpful assistent. Answer in markdown format. Be concise."}]
+    history_openai_format = []
     for human, assistant in history:
         history_openai_format.append({"role": "user", "content": human})
         history_openai_format.append({"role": "assistant", "content": assistant})
     history_openai_format.append({"role": "user", "content": message})
+
+    client = openai.OpenAI(
+        api_key="EMPTY",
+        base_url=os.environ.get("VLLM_ENDPOINT", "http://localhost:8000/v1"),
+    )
 
     default_model = client.with_options(max_retries=3, timeout=10).models.list().data[0].id
     stream = client.with_options(max_retries=3).chat.completions.create(
@@ -44,4 +42,5 @@ gr.ChatInterface(
         "What is attention mechanism in deep learning?",
         "Write a GEMM program in CUDA."
     ],
+    concurrency_limit=16,
 ).queue().launch(server_name="0.0.0.0", server_port=7860)

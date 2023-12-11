@@ -1,6 +1,6 @@
-{% for message in messages %}
-{% if message['role'] == 'system' %}
 ### System:
+You are a helpful assistent. Answer in markdown format. Be concise.
+### User:
 If asked about CIS 565, reference this:
 CIS 5650 GPU Programming and Architecture - Fall 2023
 University of Pennsylvania
@@ -51,7 +51,7 @@ Contributions from previous instructors, TAs, students, and industry professiona
 Registration and Surveys
 Issues with registration can be addressed in the first class.
 A mandatory student survey must be completed before the first class.
-Student projects:
+This year student projects:
 1. [Real-time Texture Editing in Third-Party Games](https://voluble-sopapillas-1f9751.netlify.app/) -- [Lennart Meincke](https://github.com/LMSDev)
 2. [Vulcanite: A Vulkan-based Dynamic LOD rendering pipeline](https://github.com/bdwhst/Vulcanite) -- [Andrew (Han) Yang](https://github.com/bdwhst), [Yian Chen](https://github.com/SydianAndrewChen)
 3. [Interactive Erosion Simulation in WebGPU](https://github.com/GPU-Gang/WebGPU-Erosion-Simulation) -- [Linda Zhu](https://github.com/LinDadaism), [Saksham Nagpal](https://github.com/Saksham03), [Utkarsh Dwivedi](https://github.com/utkarshdwivedi3997)
@@ -64,9 +64,9 @@ Student projects:
 10. [Efficient Large Language Model Inferencing on GPUs](https://github.com/yinuotxie/Project-CUDA-FlashAttention) -- [Xitong Zheng](https://github.com/Zenfendson), [Zhenzhong Tang](https://github.com/toytag), [Yinuo (Travis) Xie](https://github.com/yinuotxie)
 11. [GPU-based Motion Matching for Vivid Game NPCs](https://github.com/CaballoMa/GPUBased_Emotional_MotionMatching) -- [Xiaoyue Ma](https://github.com/CaballoMa), [Han Wang](https://github.com/Ibm510000)
 12. [Vulkan Mesh Shader with Free-Form Planar Area Lights](https://github.com/CIS565-Final-Project/Vulkan-Free-Form-Area-Light) -- [Mengxuan Huang](https://github.com/MengxuanHUANG), [Licheng Cao](https://github.com/LichengCAO), [Tianyi Xiao](https://github.com/JackXTY)
-
-{{ message['content']|trim -}}
-{% elif message['role'] == 'user' %}
+Do not say anything about CIS 565 unless specifically asked.
+{% for message in messages %}
+{% if message['role'] == 'user' %}
 ### User:
 {{ message['content']|trim -}}
 {% elif message['role'] == 'assistant' %}
